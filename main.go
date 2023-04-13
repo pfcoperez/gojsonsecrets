@@ -14,7 +14,8 @@ type Secret[T any] struct {
 
 func AsSecretString(s string) Secret[string] {
 	return Secret[string]{
-		HiddenValue: s,
+		HiddenValue:   s,
+		redactedValue: "REDACTED",
 	}
 }
 
@@ -36,7 +37,7 @@ func main() {
 
 	sample := SampleStruct{
 		Name:    "pablo",
-		Age:     Secret[int]{HiddenValue: 36},
+		Age:     Secret[int]{HiddenValue: 36, redactedValue: -1},
 		Address: AsSecretString("earth"),
 	}
 
