@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
 )
 
 var JsonRedactSecrets bool = true
@@ -35,10 +37,15 @@ type SampleStruct struct {
 
 func main() {
 
+	envRedact, errorParsingEnv := strconv.ParseBool(os.Getenv("REDACT_SECRETS"))
+	if errorParsingEnv == nil {
+		JsonRedactSecrets = envRedact
+	}
+
 	sample := SampleStruct{
-		Name:    "pablo",
-		Age:     Secret[int]{HiddenValue: 36, redactedValue: -1},
-		Address: AsSecretString("earth"),
+		Name:    "Hiro Protagonist",
+		Age:     Secret[int]{HiddenValue: 30, redactedValue: -1},
+		Address: AsSecretString("U-Store-It unit"),
 	}
 
 	mv, _ := json.Marshal(sample)
