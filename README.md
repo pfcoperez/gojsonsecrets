@@ -41,7 +41,7 @@ Yields
 And
 
 ```bash
-REDACT_SECRETS=true go run main.go
+REDACT_SECRETS=false go run main.go | jq
 ```
 
 Yields
