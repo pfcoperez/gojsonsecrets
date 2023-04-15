@@ -25,7 +25,7 @@ sample := SampleStruct{
 We can get two run examples:
 
 ```bash
-REDACT_SECRETS=true go run main.go | jq 
+REDACT_SECRETS=true go run main.go | head -n 1 | jq '.'
 ```
 
 Yields
@@ -41,7 +41,7 @@ Yields
 And
 
 ```bash
-REDACT_SECRETS=false go run main.go | jq
+REDACT_SECRETS=false go run main.go | head -n 1 | jq '.'
 ```
 
 Yields
@@ -52,4 +52,28 @@ Yields
   "Age": 30,
   "Address": "U-Store-It unit"
 }
+```
+
+Instance of `Stringer` interface is also provided making string values safe:
+
+```bash
+REDACT_SECRETS=true go run main.go | tail -n 1
+```
+
+Yields
+
+```
+{Hiro Protagonist -1 REDACTED}
+```
+
+And
+
+```bash
+REDACT_SECRETS=false go run main.go | tail -n 1
+```
+
+Yields
+
+```
+{Hiro Protagonist 30 U-Store-It unit}
 ```

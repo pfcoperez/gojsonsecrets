@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var JsonRedactSecrets bool = true
+var RedactSecrets bool = true
 
 type Secret[T any] struct {
 	HiddenValue   T
@@ -21,12 +21,26 @@ func AsSecretString(s string) Secret[string] {
 	}
 }
 
-func (s Secret[T]) MarshalJSON() ([]byte, error) {
-	var valueToMarshal interface{} = s.HiddenValue
-	if JsonRedactSecrets {
-		valueToMarshal = s.redactedValue
+// Common
+
+func safeValue[T any](s Secret[T]) T {
+	if RedactSecrets {
+		return s.redactedValue
+	} else {
+		return s.HiddenValue
 	}
-	return json.Marshal(valueToMarshal)
+}
+
+// JSON
+
+func (s Secret[T]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(safeValue(s))
+}
+
+// Strings
+
+func (s Secret[T]) String() string {
+	return fmt.Sprint(safeValue(s))
 }
 
 type SampleStruct struct {
@@ -39,7 +53,7 @@ func main() {
 
 	envRedact, errorParsingEnv := strconv.ParseBool(os.Getenv("REDACT_SECRETS"))
 	if errorParsingEnv == nil {
-		JsonRedactSecrets = envRedact
+		RedactSecrets = envRedact
 	}
 
 	sample := SampleStruct{
@@ -50,4 +64,5 @@ func main() {
 
 	mv, _ := json.Marshal(sample)
 	fmt.Println(string(mv))
+	fmt.Println(sample)
 }
