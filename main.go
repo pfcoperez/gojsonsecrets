@@ -37,6 +37,10 @@ func (s Secret[T]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(safeValue(s))
 }
 
+func (s *Secret[T]) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &s.HiddenValue)
+}
+
 // Strings
 
 func (s Secret[T]) String() string {
@@ -63,6 +67,8 @@ func main() {
 	}
 
 	mv, _ := json.Marshal(sample)
+	var unmarshalled Secret[SampleStruct]
+	json.Unmarshal(mv, &unmarshalled)
 	fmt.Println(string(mv))
-	fmt.Println(sample)
+	fmt.Println(unmarshalled)
 }
