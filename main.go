@@ -14,10 +14,14 @@ type Secret[T any] struct {
 	redactedValue T
 }
 
-func AsSecretString(s string) Secret[string] {
-	return Secret[string]{
-		HiddenValue:   s,
-		redactedValue: "REDACTED",
+func AsSecret[T any](value T, redactedValue ...T) Secret[T] {
+	var redacted T
+	if len(redactedValue) > 0 {
+		redacted = redactedValue[0]
+	}
+	return Secret[T]{
+		HiddenValue:   value,
+		redactedValue: redacted,
 	}
 }
 
@@ -63,7 +67,7 @@ func main() {
 	sample := SampleStruct{
 		Name:    "Hiro Protagonist",
 		Age:     Secret[int]{HiddenValue: 30, redactedValue: -1},
-		Address: AsSecretString("U-Store-It unit"),
+		Address: AsSecret("U-Store-It unit", "REDACTED"),
 	}
 
 	mv, _ := json.Marshal(sample)
